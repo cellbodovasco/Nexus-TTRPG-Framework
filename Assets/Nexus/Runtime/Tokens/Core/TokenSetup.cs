@@ -12,13 +12,18 @@ public class TokenSetup : MonoBehaviour
     [SerializeField] private float angularDrag = 0.5f;
     
     [Header("Scale Settings")]
-    [SerializeField] private float minScale = 0.25f;
+    [SerializeField] private float minScale = 0.10f;
     [SerializeField] private float maxScale = 4f;
-    [SerializeField] private float scaleStep = 0.25f;
-    [SerializeField] private float currentScale = 1f;
+    [SerializeField] private float scaleStep = 0.05f;
+    [SerializeField] private float currentScale = 0.80f;
     
     [Header("Sprite Settings")]
     [SerializeField] private bool billboardToCamera = true;
+    
+    [Header("Directional 4-Way Billboard")]
+    [SerializeField] private bool directional4WayBillboard = false;
+    [SerializeField] private Sprite directionalFrontSprite;
+    [SerializeField] private Sprite directionalBackSprite;
     
     [Header("Proximity Squash Settings")]
     [SerializeField] private bool squashNearCamera = true;
@@ -175,6 +180,22 @@ public class TokenSetup : MonoBehaviour
             {
                 Quaternion targetRotation = Quaternion.LookRotation(directionToCamera);
                 spriteTransform.rotation = targetRotation;
+            }
+        }
+        if (directional4WayBillboard && spriteRenderer != null && mainCamera != null)
+        {
+            Vector3 toCam = mainCamera.transform.position - transform.position;
+            toCam.y = 0f;
+            if (toCam.sqrMagnitude > 0.001f)
+            {
+                Vector3 dir = toCam.normalized;
+                bool front = Vector3.Dot(transform.forward, dir) >= 0f;
+                bool right = Vector3.Dot(transform.right, dir) > 0f;
+                Sprite target = front
+                    ? (directionalFrontSprite != null ? directionalFrontSprite : (defaultSprite != null ? defaultSprite : spriteRenderer.sprite))
+                    : (directionalBackSprite != null ? directionalBackSprite : (directionalFrontSprite != null ? directionalFrontSprite : (defaultSprite != null ? defaultSprite : spriteRenderer.sprite)));
+                if (spriteRenderer.sprite != target) spriteRenderer.sprite = target;
+                spriteRenderer.flipX = !right;
             }
         }
         if (squashNearCamera && spriteTransform != null && mainCamera != null)

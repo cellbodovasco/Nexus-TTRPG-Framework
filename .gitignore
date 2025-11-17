@@ -29,3 +29,5 @@ MemoryCaptures/
 *.aab
 /.vscode
 mono_crash.mem.12555.1.blob
+/Assets/NexusUser
+Assets/NexusUser.meta
