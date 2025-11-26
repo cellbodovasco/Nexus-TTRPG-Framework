@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using System.Linq;
 
 /// <summary>
 /// Manages dynamic scene loading/unloading.
@@ -155,6 +156,12 @@ public class SceneManager : MonoBehaviour
         
         while (!loadOp.isDone) yield return null;
         
+        var loadedScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName(sceneName);
+        if (loadedScene.IsValid())
+        {
+            UnityEngine.SceneManagement.SceneManager.SetActiveScene(loadedScene);
+        }
+        
         // Minimum load time for smooth transitions
         float elapsed = Time.time - startTime;
         if (elapsed < config.minimumLoadTime)
@@ -166,6 +173,7 @@ public class SceneManager : MonoBehaviour
         isLoading = false;
         
         Log($"Scene loaded: {sceneName}");
+        LogPostLoadDiagnostics();
         
         // Reset light culling cache if exists
         ResetLightCullingCache();
@@ -212,5 +220,21 @@ public class SceneManager : MonoBehaviour
     private void Log(string message)
     {
         if (showDebugLogs) Debug.Log($"[SceneManager] {message}");
+    }
+    
+    private void LogPostLoadDiagnostics()
+    {
+        if (!showDebugLogs) return;
+        int camCount = 0;
+        int audioListenerCount = 0;
+        int lightEnabledCount = 0;
+        var cams = Object.FindObjectsOfType<Camera>(true);
+        for (int i = 0; i < cams.Length; i++) if (cams[i] != null && cams[i].enabled) camCount++;
+        var als = Object.FindObjectsOfType<AudioListener>(true);
+        for (int i = 0; i < als.Length; i++) if (als[i] != null && als[i].enabled) audioListenerCount++;
+        var lights = Object.FindObjectsOfType<Light>(true);
+        for (int i = 0; i < lights.Length; i++) if (lights[i] != null && lights[i].enabled) lightEnabledCount++;
+        var active = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        Debug.Log($"[SceneManager] Diagnostics: ActiveScene='{active.name}', Enabled Cameras={camCount}, AudioListeners={audioListenerCount}, Lights={lightEnabledCount}");
     }
 }

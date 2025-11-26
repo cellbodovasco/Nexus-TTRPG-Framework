@@ -36,6 +36,10 @@ namespace Nexus.Networking
         public override void OnStartLocalPlayer()
         {
             base.OnStartLocalPlayer();
+            if (Application.isPlaying)
+            {
+                DontDestroyOnLoad(gameObject);
+            }
             
             // Enable camera and controls only for local player
             if (playerCamera != null)

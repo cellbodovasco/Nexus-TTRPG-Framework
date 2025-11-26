@@ -8,4 +8,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Nexus/Resources/Scenes/MainScene.unity
     guid: 2c9b6153528b23a35bb0a15ba52b6f4e
+  - enabled: 1
+    path: Assets/NexusUser/Scenes/Subscenes/Cabin Demo 1.unity
+    guid: 265b362d9307fee518379213cb1cd7cf
+  - enabled: 1
+    path: Assets/Nexus/Resources/Scenes/SubScenes/Cabin Demo.unity
+    guid: d889a95d703ef68e0803600392e907b0
   m_configObjects: {}
